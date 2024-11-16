@@ -79,12 +79,21 @@ st.title("Prompt To Price")
 text_container = st.container()
 user_input = text_container.text_area("Enter your text:", key="input", height=200)
 
-#
-uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
+def handle_file_upload():
+    uploaded_file = st.file_uploader("Upload a file", type=["csv", "txt", "json"])
+    if uploaded_file is not None:
+        if uploaded_file.type == "text/csv":
+            df = pd.read_csv(uploaded_file)
+            return " ".join(df.iloc[:, 0].astype(str).tolist())
+        elif uploaded_file.type == "text/plain":
+            return uploaded_file.read().decode("utf-8")
+        elif uploaded_file.type == "application/json":
+            return pd.read_json(uploaded_file).to_string()
+    return None
 
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
-    user_input = " ".join(df.iloc[:, 0].astype(str).tolist())
+uploaded_text = handle_file_upload()
+if uploaded_text:
+    user_input = uploaded_text
 
 col1, col2, *cols = st.columns(8)
 
