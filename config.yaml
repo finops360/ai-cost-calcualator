@@ -1,0 +1,78 @@
+Language Models:
+  - name: GPT-4 Turbo
+    models:
+      - name: gpt-4-0125-preview
+        # Ensure latest info is checked
+        input_cost: 0.02
+        output_cost: 0.04
+        per_token: 1000
+      - name: gpt-4-1106-preview
+        # Ensure latest info is checked
+        input_cost: 0.02
+        output_cost: 0.04
+        per_token: 1000
+      - name: gpt-4-1106-vision-preview
+        # Ensure latest info is checked
+        input_cost: 0.02
+        output_cost: 0.04
+        per_token: 1000
+        vision:
+          low:
+            # Ensure latest info is checked
+            input_cost: 0.02
+            per_token: 1000
+            total_token: 85
+          high:
+            # Ensure latest info is checked
+            input_cost: 0.02
+            per_token: 1000
+            base_token: 85
+            tile_size: 512
+  - name: GPT-4
+    models:
+      - name: gpt-4
+        # Ensure latest info is checked
+        input_cost: 0.04
+        output_cost: 0.07
+        per_token: 1000
+      - name: gpt-4-32k
+        # Ensure latest info is checked
+        input_cost: 0.07
+        output_cost: 0.14
+        per_token: 1000
+  - name: GPT-3.5 Turbo
+    models:
+      - name: gpt-3.5-turbo-1106
+        # Ensure latest info is checked
+        input_cost: 0.0006
+        output_cost: 0.0018
+        per_token: 1000
+      - name: gpt-3.5-turbo-instruct
+        # Ensure latest info is checked
+        input_cost: 0.0018
+        output_cost: 0.0025
+        per_token: 1000
+  - name: Embedding models
+    models:
+      - name: text-embedding-3-small
+        # Ensure latest info is checked
+        input_cost: 0.00003
+        per_token: 1000
+      - name: text-embedding-3-large
+        # Ensure latest info is checked
+        input_cost: 0.00015
+        per_token: 1000
+      - name: text-embedding-ada-002
+        # Ensure latest info is checked
+        input_cost: 0.00012
+        per_token: 1000
+  - name: Base models
+    models:
+      - name: davinci-002
+        # Ensure latest info is checked
+        input_cost: 0.0025
+        per_token: 1000
+      - name: babbage-002
+        # Ensure latest info is checked
+        input_cost: 0.0005
+        per_token: 1000
