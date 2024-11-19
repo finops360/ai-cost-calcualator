@@ -3,8 +3,6 @@ import tiktoken
 import streamlit as st
 import pandas as pd
 
-from utils import calculate_vision_token_cost
-
 # Set up the Streamlit page configuration
 st.set_page_config(
     page_title="OpenAI API Pricing Calculator",
@@ -41,7 +39,6 @@ selected_model = st.sidebar.selectbox(
 # Find the relevant model from the model class
 idx = next(i for i, model in enumerate(models) if model["name"] == selected_model)
 
-
 # Display input cost per {per_token} for the selected model in the sidebar
 per_token = models[idx].get("per_token", 1)
 input_cost_per_token = models[idx].get("input_cost", "NA")
@@ -59,11 +56,11 @@ st.sidebar.markdown(
     """
 )
 
-# Main content
-st.title("Prompt To Price")
-
 # Textbox for user input
-user_input = st.sidebar.text_area("Enter your text:", key="input", height=200)
+user_input = st.sidebar.text_area("Enter your text to calculate token:", key="input", height=200)
+
+# Number input for output tokens
+output_token_count = st.sidebar.number_input("Number of output tokens", min_value=0, step=1)
 
 # Function to handle file upload
 def handle_file_upload():
@@ -92,45 +89,49 @@ pricing_button = col1.button("Pricing")
 # Calculate pricing if button is clicked or user input is provided
 if pricing_button or user_input:
     with st.spinner():
-        if selected_model.startswith("text-embedding"):
-            encoding = tiktoken.get_encoding("cl100k_base")
-        else:
-            encoding = tiktoken.encoding_for_model(selected_model)
+        results = []
+        for model_class in model_classes:
+            for model in model_class["models"]:
+                if model["name"].startswith("text-embedding"):
+                    encoding = tiktoken.get_encoding("cl100k_base")
+                else:
+                    try:
+                        encoding = tiktoken.encoding_for_model(model["name"])
+                    except KeyError:
+                        encoding = tiktoken.get_encoding("cl100k_base")
 
-        token_count = len(encoding.encode(user_input))
-        output_token_count = st.sidebar.number_input("Number of output tokens", min_value=0, step=1)
+                token_count = len(encoding.encode(user_input))
+                per_token = model.get("per_token", 1)
+                input_cost_per_token = model.get("input_cost", "NA")
+                output_cost_per_token = float(model.get("output_cost", 0))
 
-        # Calculate total cost
-        if selected_model == "gpt-4-1106-vision-preview":
-            total_cost = (
-                (token_count + image_token_count) * input_cost_per_token / per_token
-                + output_token_count * output_cost_per_token / per_token
-            )
-            st.info(
-                "Checkout https://platform.openai.com/docs/guides/vision/calculating-costs for more details"
-            )
-        else:
-            total_cost = (
-                token_count * input_cost_per_token / per_token
-                + output_token_count * output_cost_per_token / per_token
-            )
+                if model["name"] == "gpt-4-1106-vision-preview":
+                    total_cost = (
+                        (token_count) * input_cost_per_token / per_token
+                        + output_token_count * output_cost_per_token / per_token
+                    )
+                else:
+                    total_cost = (
+                        token_count * input_cost_per_token / per_token
+                        + output_token_count * output_cost_per_token / per_token
+                    )
+
+                results.append({
+                    "Model Class": model_class["name"],
+                    "Model": model["name"],
+                    "Number of Characters": len(user_input),
+                    "Number of Tokens": token_count,
+                    "Number of Output Tokens": output_token_count,
+                    "Input Cost per Token": f"${input_cost_per_token}",
+                    "Output Cost per Token": f"${output_cost_per_token}",
+                    "Total Cost": f"${total_cost:.7f}"
+                })
+
+        result_df = pd.DataFrame(results)
+        st.table(result_df)
 
 # Clear button to reset the text area
 def clear_text():
     st.session_state["input"] = ""
 
 col2.button("Clear", on_click=clear_text)
-
-# Display the results in a table format
-if user_input:
-    data = {
-        "Metric": ["Number of characters", "Number of Tokens", "Number of Output Tokens", "Input Cost per Token", "Output Cost per Token", "Total Cost"],
-        "Value": [len(user_input), token_count, output_token_count, f"${input_cost_per_token}", f"${output_cost_per_token}", f"${total_cost:.7f}"]
-    }
-
-    if selected_model == "gpt-4-1106-vision-preview":
-        data["Metric"].insert(3, "Number of Images Tokens")
-        data["Value"].insert(3, image_token_count)
-
-    result_df = pd.DataFrame(data).astype(str)
-    st.table(result_df)
