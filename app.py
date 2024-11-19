@@ -5,7 +5,6 @@ import pandas as pd
 
 from utils import calculate_vision_token_cost
 
-
 st.set_page_config(
     page_title="OpenAI API Pricing Calculator",
     page_icon="💡",
@@ -37,7 +36,6 @@ selected_model = st.sidebar.selectbox(
     "Select Model", [model["name"] for model in models]
 )
 
-
 # finding relevant model from model class
 idx = next(i for i, model in enumerate(models) if model["name"] == selected_model)
 
@@ -65,10 +63,17 @@ if selected_model == "gpt-4-1106-vision-preview":
 # Display input cost per {per_token} for the selected model in the sidebar
 per_token = models[idx].get("per_token", 1)
 input_cost_per_token = models[idx].get("input_cost", "NA")
+output_cost_per_token = float(models[idx].get("output_cost", 0))
 st.sidebar.markdown(
     f"""
     Input Cost per {per_token} tokens:   
     **${input_cost_per_token}** for **{selected_model}**
+    """
+)
+st.sidebar.markdown(
+    f"""
+    Output Cost per {per_token} tokens:   
+    **${output_cost_per_token}** for **{selected_model}**
     """
 )
 
@@ -107,17 +112,22 @@ if pricing_button or user_input:
             encoding = tiktoken.encoding_for_model(selected_model)
 
         token_count = len(encoding.encode(user_input))
+        output_token_count = st.sidebar.number_input("Number of output tokens", min_value=0, step=1)
 
         # Calculate total cost
         if selected_model == "gpt-4-1106-vision-preview":
             total_cost = (
                 (token_count + image_token_count) * input_cost_per_token / per_token
+                + output_token_count * output_cost_per_token / per_token
             )
             st.info(
                 "Checkout https://platform.openai.com/docs/guides/vision/calculating-costs for more details"
             )
         else:
-            total_cost = token_count * input_cost_per_token / per_token
+            total_cost = (
+                token_count * input_cost_per_token / per_token
+                + output_token_count * output_cost_per_token / per_token
+            )
 
         # Display total cost
         result_container = st.container(border=True)
@@ -128,6 +138,7 @@ if pricing_button or user_input:
                     Number of characters: {len(user_input)}  
                     Number of Text Tokens: {token_count}  
                     Number of Images Tokens: {image_token_count}  
+                    Number of Output Tokens: {output_token_count}  
                     Total Cost: ${total_cost:.7f}
                 """
                 )
@@ -136,6 +147,7 @@ if pricing_button or user_input:
                     f"""
                     Number of characters: {len(user_input)}  
                     Number of Tokens: {token_count}  
+                    Number of Output Tokens: {output_token_count}  
                     Total Cost: ${total_cost:.7f}
                 """
                 )
@@ -145,3 +157,16 @@ def clear_text():
 
 
 col2.button("Clear", on_click=clear_text)
+# Display the results in a table format
+if user_input:
+    data = {
+        "Metric": ["Number of characters", "Number of Tokens", "Number of Output Tokens", "Input Cost per Token", "Output Cost per Token", "Total Cost"],
+        "Value": [len(user_input), token_count, output_token_count, f"${input_cost_per_token}", f"${output_cost_per_token}", f"${total_cost:.7f}"]
+    }
+
+    if selected_model == "gpt-4-1106-vision-preview":
+        data["Metric"].insert(3, "Number of Images Tokens")
+        data["Value"].insert(3, image_token_count)
+
+    result_df = pd.DataFrame(data).astype(str)
+    st.table(result_df)

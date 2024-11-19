@@ -28,6 +28,11 @@ Language Models:
             per_token: 1000
             base_token: 85
             tile_size: 512
+      - name: gpt-4-2023
+        # Ensure latest info is checked
+        input_cost: 0.03
+        output_cost: 0.05
+        per_token: 1000
   - name: GPT-4
     models:
       - name: gpt-4
@@ -40,6 +45,11 @@ Language Models:
         input_cost: 0.07
         output_cost: 0.14
         per_token: 1000
+      - name: gpt-4-64k
+        # Ensure latest info is checked
+        input_cost: 0.08
+        output_cost: 0.16
+        per_token: 1000
   - name: GPT-3.5 Turbo
     models:
       - name: gpt-3.5-turbo-1106
@@ -51,6 +61,11 @@ Language Models:
         # Ensure latest info is checked
         input_cost: 0.0018
         output_cost: 0.0025
+        per_token: 1000
+      - name: gpt-3.5-turbo-2023
+        # Ensure latest info is checked
+        input_cost: 0.0007
+        output_cost: 0.0020
         per_token: 1000
   - name: Embedding models
     models:
@@ -66,6 +81,10 @@ Language Models:
         # Ensure latest info is checked
         input_cost: 0.00012
         per_token: 1000
+      - name: text-embedding-ada-003
+        # Ensure latest info is checked
+        input_cost: 0.00014
+        per_token: 1000
   - name: Base models
     models:
       - name: davinci-002
@@ -75,4 +94,12 @@ Language Models:
       - name: babbage-002
         # Ensure latest info is checked
         input_cost: 0.0005
+        per_token: 1000
+      - name: curie-002
+        # Ensure latest info is checked
+        input_cost: 0.0010
+        per_token: 1000
+      - name: ada-002
+        # Ensure latest info is checked
+        input_cost: 0.0004
         per_token: 1000
