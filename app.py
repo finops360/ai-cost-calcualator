@@ -41,22 +41,6 @@ selected_model = st.sidebar.selectbox(
 # Find the relevant model from the model class
 idx = next(i for i, model in enumerate(models) if model["name"] == selected_model)
 
-# For vision models, different pricing exists
-if selected_model == "gpt-4-1106-vision-preview":
-    vision_dict = models[idx].get("vision", {})
-    if vision_dict:
-        resolution = st.sidebar.selectbox("Select Resolution", vision_dict.keys())
-        width = st.sidebar.number_input("Width", min_value=0, value=512, step=1)
-        height = st.sidebar.number_input("Height", min_value=0, value=512, step=1)
-        number_of_images = st.sidebar.number_input("Number of images", min_value=0, step=1)
-
-        image_token_count = (
-            calculate_vision_token_cost(width, height, detail=resolution)
-            * number_of_images
-        )
-        st.sidebar.markdown(
-            f"Number of tokens for {number_of_images} images: **{image_token_count}**"
-        )
 
 # Display input cost per {per_token} for the selected model in the sidebar
 per_token = models[idx].get("per_token", 1)

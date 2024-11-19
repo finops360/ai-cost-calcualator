@@ -11,23 +11,6 @@ Language Models:
         input_cost: 0.02
         output_cost: 0.04
         per_token: 1000
-      - name: gpt-4-1106-vision-preview
-        # Ensure latest info is checked
-        input_cost: 0.02
-        output_cost: 0.04
-        per_token: 1000
-        vision:
-          low:
-            # Ensure latest info is checked
-            input_cost: 0.02
-            per_token: 1000
-            total_token: 85
-          high:
-            # Ensure latest info is checked
-            input_cost: 0.02
-            per_token: 1000
-            base_token: 85
-            tile_size: 512
       - name: gpt-4-2023
         # Ensure latest info is checked
         input_cost: 0.03
