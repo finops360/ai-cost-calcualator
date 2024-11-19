@@ -71,14 +71,31 @@ Here is a comparative line chart showing the costs per 1,000 tokens for various 
 
 For teams grappling with escalating GenAI costs, here are strategies to consider:
 
-1. Optimize Token Usage: By analyzing historical usage patterns, teams can adjust input and output token limits to what’s strictly necessary, potentially reducing costs significantly.
-2. Right-Sizing the Model: Use simpler models for less complex tasks to save costs, while reserving larger models like GPT-4 for high-complexity applications.
-3. Implementing Caching Mechanisms: Frequently used responses benefit from caching to avoid redundant token usage.
-4. Batch Processing and Queuing: Aggregating non-time-sensitive requests can improve cost efficiency and latency.
-5. Leverage Token Budgeting Strategies: Token budgeting helps control token use by setting limits per task.
-6. Optimizing Model Selection and Usage: Match model complexity to requirements. Using smaller, task-specific models can reduce costs.
-7. Token Strategy: Limit token usage per request by truncating input/output or using summarization techniques.
-8. Resource Allocation and Scheduling: Optimal use of infrastructure—by scheduling workloads during off-peak hours or using auto-scaling features—can lead to significant savings.
+1. **Optimize Token Usage**: By analyzing historical usage patterns, teams can adjust input and output token limits to what’s strictly necessary, potentially reducing costs significantly.
+    - *Example*: If a customer support bot typically uses 500 tokens per response, but analysis shows that 400 tokens suffice for most queries, adjusting the token limit can save costs without affecting performance.
+
+2. **Right-Sizing the Model**: Use simpler models for less complex tasks to save costs, while reserving larger models like GPT-4 for high-complexity applications.
+    - *Example*: Deploy GPT-3.5 for routine customer interactions and reserve GPT-4 for complex data analysis tasks.
+
+3. **Implementing Caching Mechanisms**: Frequently used responses benefit from caching to avoid redundant token usage.
+    - *Example*: Cache common responses in a FAQ bot to reduce the need for repeated model queries.
+
+4. **Batch Processing and Queuing**: Aggregating non-time-sensitive requests can improve cost efficiency and latency.
+    - *Example*: Batch process nightly data analysis tasks instead of running them in real-time, reducing peak-hour compute costs.
+
+5. **Leverage Token Budgeting Strategies**: Token budgeting helps control token use by setting limits per task.
+    - *Example*: Set a token budget for each department's monthly usage to prevent overuse and manage costs effectively.
+
+6. **Optimizing Model Selection and Usage**: Match model complexity to requirements. Using smaller, task-specific models can reduce costs.
+    - *Example*: Use a specialized sentiment analysis model for social media monitoring instead of a general-purpose language model.
+
+7. **Token Strategy**: Limit token usage per request by truncating input/output or using summarization techniques.
+    - *Example*: Summarize lengthy documents before feeding them into the model to reduce input tokens.
+
+8. **Resource Allocation and Scheduling**: Optimal use of infrastructure—by scheduling workloads during off-peak hours or using auto-scaling features—can lead to significant savings.
+    - *Example*: Schedule training jobs during off-peak hours when compute costs are lower, and use auto-scaling to adjust resources based on demand.
+
+By implementing these strategies, organizations can significantly reduce their GenAI costs while maintaining high performance and efficiency.
 
 ## 3. Implementing FinOps for Generative AI
 

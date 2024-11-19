@@ -5,6 +5,7 @@ import pandas as pd
 
 from utils import calculate_vision_token_cost
 
+# Set up the Streamlit page configuration
 st.set_page_config(
     page_title="OpenAI API Pricing Calculator",
     page_icon="💡",
@@ -21,7 +22,7 @@ model_type = st.sidebar.selectbox("Select Type", ["Language Models"])
 # Get the selected models based on the type
 model_classes = models_data.get(model_type, [])
 
-# Sidebar for selecting specific model
+# Sidebar for selecting specific model class
 selected_model_class = st.sidebar.selectbox(
     "Select Model Class", [model_class["name"] for model_class in model_classes]
 )
@@ -31,26 +32,23 @@ select_model_class_idx = next(
     if model_class["name"] == selected_model_class
 )
 
+# Get the models for the selected model class
 models = model_classes[select_model_class_idx]["models"]
 selected_model = st.sidebar.selectbox(
     "Select Model", [model["name"] for model in models]
 )
 
-# finding relevant model from model class
+# Find the relevant model from the model class
 idx = next(i for i, model in enumerate(models) if model["name"] == selected_model)
 
-# for vision models different pricing exists
+# For vision models, different pricing exists
 if selected_model == "gpt-4-1106-vision-preview":
     vision_dict = models[idx].get("vision", {})
     if vision_dict:
         resolution = st.sidebar.selectbox("Select Resolution", vision_dict.keys())
-
         width = st.sidebar.number_input("Width", min_value=0, value=512, step=1)
         height = st.sidebar.number_input("Height", min_value=0, value=512, step=1)
-
-        number_of_images = st.sidebar.number_input(
-            "Number of images", min_value=0, step=1
-        )
+        number_of_images = st.sidebar.number_input("Number of images", min_value=0, step=1)
 
         image_token_count = (
             calculate_vision_token_cost(width, height, detail=resolution)
@@ -81,11 +79,11 @@ st.sidebar.markdown(
 st.title("Prompt To Price")
 
 # Textbox for user input
-text_container = st.container()
-user_input = text_container.text_area("Enter your text:", key="input", height=200)
+user_input = st.sidebar.text_area("Enter your text:", key="input", height=200)
 
+# Function to handle file upload
 def handle_file_upload():
-    uploaded_file = st.file_uploader("Upload a file", type=["csv", "txt", "json"])
+    uploaded_file = st.sidebar.file_uploader("Upload a file", type=["csv", "txt", "json"])
     if uploaded_file is not None:
         if uploaded_file.type == "text/csv":
             df = pd.read_csv(uploaded_file)
@@ -96,14 +94,18 @@ def handle_file_upload():
             return pd.read_json(uploaded_file).to_string()
     return None
 
+# Handle file upload and update user input if a file is uploaded
 uploaded_text = handle_file_upload()
 if uploaded_text:
     user_input = uploaded_text
 
+# Columns for buttons
 col1, col2, *cols = st.columns(8)
 
+# Button to calculate pricing
 pricing_button = col1.button("Pricing")
 
+# Calculate pricing if button is clicked or user input is provided
 if pricing_button or user_input:
     with st.spinner():
         if selected_model.startswith("text-embedding"):
@@ -129,34 +131,12 @@ if pricing_button or user_input:
                 + output_token_count * output_cost_per_token / per_token
             )
 
-        # Display total cost
-        result_container = st.container(border=True)
-        if user_input:
-            if selected_model == "gpt-4-1106-vision-preview":
-                result_container.markdown(
-                    f"""
-                    Number of characters: {len(user_input)}  
-                    Number of Text Tokens: {token_count}  
-                    Number of Images Tokens: {image_token_count}  
-                    Number of Output Tokens: {output_token_count}  
-                    Total Cost: ${total_cost:.7f}
-                """
-                )
-            else:
-                result_container.markdown(
-                    f"""
-                    Number of characters: {len(user_input)}  
-                    Number of Tokens: {token_count}  
-                    Number of Output Tokens: {output_token_count}  
-                    Total Cost: ${total_cost:.7f}
-                """
-                )
 # Clear button to reset the text area
 def clear_text():
     st.session_state["input"] = ""
 
-
 col2.button("Clear", on_click=clear_text)
+
 # Display the results in a table format
 if user_input:
     data = {
