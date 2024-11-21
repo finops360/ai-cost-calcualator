@@ -1,6 +1,6 @@
 # OpenAI API Pricing Calculator
 
-/opt/homebrew/bin/python3.11 -m venv myenv
+/opt/homebrew/bin/python3.11 -m venv 
 source myenv/bin/activate
 pip install -r requirements.txt
 streamlit run main.py
@@ -10,6 +10,23 @@ Upload
 vector 
 extract 
 fixed cost and variable cost 
+
+Opensource can be deployed to GPU/TPU
+
+#Deepdive GenAI Cost 
+
+Developer costs  - $70 
+Cost per GPU
+Storage costs ! 
+conitnuous maintainace ci/cd 
+Server costs 
+
+
+
+
+
+
+
 
 
 
